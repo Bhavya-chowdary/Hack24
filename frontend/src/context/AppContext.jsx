@@ -5,11 +5,26 @@ import { readStorage, writeStorage } from "../utils/storage";
 const AppContext = createContext(null);
 
 const createId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const validTaskCategories = new Set(["academic", "sports", "daily_routine"]);
+
+const normalizeTask = (task) => {
+  if (!task || typeof task.title !== "string") return null;
+
+  const category = validTaskCategories.has(task.category) ? task.category : "academic";
+
+  return {
+    ...task,
+    category,
+    targetTime: task.targetTime || "",
+    delayMinutes: Number(task.delayMinutes) || 0,
+    status: task.status === "completed" ? "completed" : "pending"
+  };
+};
 
 const defaultTasks = [
-  { id: "t1", title: "Finish DBMS assignment", category: "academic", priority: "critical", deadline: "2026-08-31", duration: 90, importance: 5, status: "pending" },
-  { id: "t2", title: "Gym session", category: "fitness", priority: "high", deadline: "2026-08-31", duration: 60, importance: 4, status: "pending" },
-  { id: "t3", title: "Prepare resume", category: "career", priority: "medium", deadline: "2026-09-02", duration: 45, importance: 3, status: "pending" }
+  { id: "t1", title: "Finish DBMS assignment", category: "academic", priority: "critical", deadline: "2026-08-31", duration: 90, importance: 5, status: "pending", targetTime: "09:00", delayMinutes: 20 },
+  { id: "t2", title: "Football practice", category: "sports", priority: "high", deadline: "2026-08-31", duration: 60, importance: 4, status: "pending", targetTime: "18:30", delayMinutes: 15 },
+  { id: "t3", title: "Morning routine", category: "daily_routine", priority: "medium", deadline: "2026-09-01", duration: 45, importance: 3, status: "completed", targetTime: "07:00", delayMinutes: 10 }
 ];
 
 const defaultGoals = [
@@ -32,7 +47,10 @@ const defaultSchedule = [
 ];
 
 export function AppProvider({ children }) {
-  const [tasks, setTasks] = useState(() => readStorage(STORAGE_KEYS.tasks, defaultTasks));
+  const [tasks, setTasks] = useState(() => {
+    const storedTasks = readStorage(STORAGE_KEYS.tasks, defaultTasks);
+    return Array.isArray(storedTasks) ? storedTasks.map(normalizeTask).filter(Boolean) : defaultTasks;
+  });
   const [goals, setGoals] = useState(() => readStorage(STORAGE_KEYS.goals, defaultGoals));
   const [activities, setActivities] = useState(() => readStorage(STORAGE_KEYS.activities, defaultActivities));
   const [schedule, setSchedule] = useState(() => readStorage(STORAGE_KEYS.schedule, defaultSchedule));
@@ -54,16 +72,23 @@ export function AppProvider({ children }) {
   }, [schedule]);
 
   const addTask = (task) => {
-    const nextTask = {
+    const nextTask = normalizeTask({
       id: createId(),
       status: "pending",
       ...task
-    };
+    });
+
+    if (!nextTask) return;
+
     setTasks((prev) => [...prev, nextTask]);
   };
 
   const updateTask = (id, changes) => {
-    setTasks((prev) => prev.map((task) => (task.id === id ? { ...task, ...changes } : task)));
+    setTasks((prev) => prev.map((task) => {
+      if (task.id !== id) return task;
+      const updatedTask = normalizeTask({ ...task, ...changes });
+      return updatedTask ?? task;
+    }));
   };
 
   const deleteTask = (id) => {

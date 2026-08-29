@@ -351,6 +351,43 @@ h2 {
   gap: 16px;
 }
 
+.task-sections {
+  display: grid;
+  gap: 20px;
+}
+
+.task-panel,
+.task-group {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+  padding: 18px;
+}
+
+.task-panel-header,
+.task-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.count-pill {
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.empty-state {
+  color: #6b7280;
+  padding: 8px 0;
+}
+
 .task-card {
   display: flex;
   align-items: center;
