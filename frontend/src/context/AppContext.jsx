@@ -13,9 +13,56 @@ const defaultTasks = [
 ];
 
 const defaultGoals = [
-  { id: "g1", title: "Improve CGPA", category: "academic", progress: 72, target: "Maintain above 8.5" },
-  { id: "g2", title: "Build fitness consistency", category: "fitness", progress: 68, target: "Train 4 times a week" },
-  { id: "g3", title: "Career readiness", category: "career", progress: 54, target: "Complete portfolio updates" }
+  {
+    id: "g1",
+    title: "Improve CGPA",
+    category: "academic",
+    goalType: "monthly-plan",
+    progress: 72,
+    target: "Maintain above 8.5 in end-semester results",
+    status: "on-track",
+    milestones: ["Revise 2 subjects each week", "Submit all assignments on time", "Practice 3 mock tests this month"]
+  },
+  {
+    id: "g2",
+    title: "Build fitness consistency",
+    category: "fitness",
+    goalType: "weekly-plan",
+    progress: 68,
+    target: "Complete 4 workouts and 2 recovery days this week",
+    status: "on-track",
+    milestones: ["Gym 4 times this week", "Track sleep and hydration", "Stretch after each workout"]
+  },
+  {
+    id: "g3",
+    title: "Career readiness",
+    category: "career",
+    goalType: "short-term",
+    progress: 54,
+    target: "Refine portfolio and complete internship outreach",
+    status: "at-risk",
+    milestones: ["Update resume and LinkedIn", "Build 2 portfolio projects", "Apply to 5 roles this month"]
+  },
+  {
+    id: "g4",
+    title: "Leadership growth",
+    category: "personal",
+    goalType: "long-term",
+    progress: 46,
+    target: "Develop a leadership identity through mentoring and communication",
+    status: "not-started",
+    milestones: ["Lead one student initiative", "Take one leadership course", "Mentor 2 juniors by the end of the semester"]
+  },
+  {
+    id: "g5",
+    title: "Research sprint",
+    category: "learning",
+    goalType: "15-days-plan",
+    progress: 81,
+    target: "Complete the research summary and proposal outline in 15 days",
+    status: "on-track",
+    milestones: ["Read 3 relevant papers", "Draft problem statement", "Finalize proposal structure"]
+  }
 ];
 
 const defaultActivities = [
@@ -71,11 +118,15 @@ export function AppProvider({ children }) {
   };
 
   const addGoal = (goal) => {
-    setGoals((prev) => [...prev, { id: createId(), ...goal }]);
+    setGoals((prev) => [...prev, { id: createId(), goalType: "short-term", status: "not-started", milestones: [], ...goal }]);
   };
 
   const updateGoal = (id, changes) => {
     setGoals((prev) => prev.map((goal) => (goal.id === id ? { ...goal, ...changes } : goal)));
+  };
+
+  const deleteGoal = (id) => {
+    setGoals((prev) => prev.filter((goal) => goal.id !== id));
   };
 
   const addActivity = (activity) => {
@@ -104,6 +155,7 @@ export function AppProvider({ children }) {
       deleteTask,
       addGoal,
       updateGoal,
+      deleteGoal,
       addActivity,
       updateScheduleItem,
       replan
