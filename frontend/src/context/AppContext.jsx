@@ -158,6 +158,18 @@ export function AppProvider({ children }) {
     setActivities((prev) => [...prev, { id: createId(), duration: 60, ...activity }]);
   };
 
+  const updateActivity = (id, changes) => {
+    setActivities((prev) => prev.map((activity) => (activity.id === id ? { ...activity, ...changes } : activity)));
+  };
+
+  const freezeActivity = (id, freezeEndsAt) => {
+    setActivities((prev) => prev.map((activity) => (activity.id === id ? { ...activity, freezeEndsAt } : activity)));
+  };
+
+  const unfreezeActivity = (id) => {
+    setActivities((prev) => prev.map((activity) => (activity.id === id ? { ...activity, freezeEndsAt: null } : activity)));
+  };
+
   const updateScheduleItem = (id, changes) => {
     setSchedule((prev) => prev.map((item) => (item.id === id ? { ...item, ...changes } : item)));
   };
@@ -182,6 +194,9 @@ export function AppProvider({ children }) {
       updateGoal,
       deleteGoal,
       addActivity,
+      updateActivity,
+      freezeActivity,
+      unfreezeActivity,
       updateScheduleItem,
       replan
     }),
